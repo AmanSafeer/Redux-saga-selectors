@@ -1,10 +1,16 @@
 import React, { Component } from "react"
 import { View, Text } from "react-native"
 import { connect } from "react-redux"
+import { BankMiddleware } from "../../store/middlewares"
 
 class Home extends Component {
   constructor() {
     super()
+  }
+
+  componentDidMount() {
+    this.props.FetchUsers().next()
+    // console.log("props", this.props)
   }
 
   render() {
@@ -22,6 +28,7 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return ({
+    FetchUsers: BankMiddleware.FetchUsers
   })
 }
 
