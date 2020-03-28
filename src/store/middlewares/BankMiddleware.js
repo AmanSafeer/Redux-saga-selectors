@@ -1,30 +1,43 @@
-import { } from '../actions';
-import { call, put, takeLatest, takeEvery, all } from 'redux-saga/effects'
-const api = "https://api.github.com/users "
+import { BankAction } from '../actions';
+import { delay, call, put, } from 'redux-saga/effects'
+import { Toast } from "native-base"
+import Axios from "axios";
+import { Alert } from 'react-native';
+import { NavigationService } from '../../config';
+const api = "https://api.github.com/users"
+
 
 class BankMiddleware {
-
     static *FetchUsers() {
-        console.log("fecthing users")
-        yield put({ type: "USER_FETCH" })
         try {
-            const users = yield call(() => {
-                fetch(api)
-                    .then(res => res.json())
-                    .then(res => res)
-                    .catch(err => err)
-            });
-            yield put({ type: "USER_FETCH_SUCCEEDED", payload: users });
-            console.log("users", users)
+            const users = yield call(Axios.get, api)
+            yield put(BankAction.fetchUsersSuccess(users.data))
+           
         } catch (e) {
-            yield put({ type: "USER_FETCH_FAILED" });
+            yield put(BankAction.fetchUsersFailure());
         }
     }
 
-    static *mySagas() {
-        yield all([
-            yield takeLatest("USER_FETCH", BankMiddleware.FetchUsers)
-        ])
+    static *AddUser(params) {
+        try {
+            yield delay(3000)
+            yield put(BankAction.AddUserSuccess(params.payload))
+            Alert.alert("Success", "Users Added Successfully")
+        }
+        catch{
+            yield put(BankAction.AddUserFailure())
+        }
+    }
+
+    static *DeleteUser(params) {
+        try {
+            yield delay(3000)
+            yield put(BankAction.DeleteUserSuccess(params.payload))
+            Alert.alert("Success", "Users Deleted Successfully")
+        }
+        catch{
+            yield put(BankAction.DeleteUserFailure())
+        }
     }
 }
 
